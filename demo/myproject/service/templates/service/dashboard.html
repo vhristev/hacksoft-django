@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Service Status Dashboard</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #1a1a1a; /* Dark background */
+            color: #ffffff; /* White text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .status-panel {
+            background: #333333; /* Darker panel */
+            border-radius: 20px;
+            box-shadow: 10px 10px 20px #2b2b2b, -10px -10px 20px #3b3b3b;
+            padding: 40px; /* Increased padding */
+            text-align: center;
+            width: 600px; /* Bigger panel */
+            transition: all 0.3s ease;
+        }
+        .status {
+            font-size: 32px; /* Larger font size */
+            margin: 0;
+            transition: color 0.3s;
+        }
+        .operational, .down {
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .operational {
+            background-color: #28a745; /* Bootstrap green */
+        }
+        .down {
+            background-color: #dc3545; /* Bootstrap red */
+        }
+        .details {
+            font-size: 20px; /* Larger font size */
+            margin-top: 15px;
+        }
+        .status-bar {
+            height: 20px;
+            width: 100%;
+            margin-top: 20px;
+            background-color: #555;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .status-bar-inner {
+            height: 100%;
+            width: 0;
+            background-color: #28a745;
+            border-radius: 10px;
+            transition: width 2s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-panel">
+        <p class="status">Checking...</p>
+        <p class="details"></p>
+        <div class="status-bar">
+            <div class="status-bar-inner"></div>
+        </div>
+    </div>
+
+    <script>
+        function updateServiceStatus() {
+            fetch('/service_status/')
+                .then(response => response.json())
+                .then(data => {
+                    const statusParagraph = document.querySelector('.status');
+                    const detailsParagraph = document.querySelector('.details');
+                    const statusBarInner = document.querySelector('.status-bar-inner');
+
+                    statusParagraph.textContent = 'Status: ' + data.status;
+                    statusParagraph.className = 'status ' + (data.status === 'Operational' ? 'operational' : 'down');
+                    statusBarInner.style.width = data.status === 'Operational' ? '100%' : '0%';
+
+                    let detailsText = 'Last checked: ' + data.last_checked;
+                    if (data.status === 'Operational') {
+                        detailsText += ' | Response time: ' + data.response_time + 's';
+                    } else {
+                        detailsText += ' | Error: ' + data.error;
+                    }
+                    detailsParagraph.textContent = detailsText;
+                })
+                .catch(error => {
+                    document.querySelector('.status').textContent = 'Status: Down';
+                    document.querySelector('.status').className = 'status down';
+                    document.querySelector('.details').textContent = 'Failed to load data!';
+                    document.querySelector('.status-bar-inner').style.width = '0%';
+                });
+        }
+
+        setInterval(updateServiceStatus, 2000); // Update every 2 seconds
+        updateServiceStatus(); // Initial call
+    </script>
+</body>
+</html>
+
