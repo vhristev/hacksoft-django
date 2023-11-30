@@ -58,9 +58,20 @@ vagrant@ubuntu:~$ sudo lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
 vagrant@ubuntu:~$ sudo resize2fs /dev/ubuntu-vg/ubuntu-lv
 ```
 
+### 0.3 Clone the rep
+
+Lets clone the repo:
+
+```bash
+vagrant@ubuntu:~$ git clone https://github.com/vhristev/hacksoft-django/tree/main
+vagrant@ubuntu:~$ cd hacksoft-django/demo
+```
+
+
 ### 1. Install Docker
 
-Lets start by installing Docker.
+Lets start by installing Docker. Be sure to be in the `demo` folder because
+installation files are there.
 
 We will use Docker to run our containers. Here is a script to install it:
 
